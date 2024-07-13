@@ -59,65 +59,9 @@ def delete_cron_job(index, edit=False, code=None):
         datetime_now = dt.datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
         with open(f'./tmp/backup_cron_{datetime_now}.txt', 'w') as f:
             f.write('\n'.join(current_jobs) + '\n')
-
-        if not edit:
-            job_item = current_jobs[index]
-            cmd = ' '.join(job_item.split(' ')[5:]).strip()
-            if not " " in cmd:
-                if os.path.exists(cmd):
-                    os.remove(cmd)
-        elif edit and code:
-            job_item = current_jobs[index]
-            cmd = ' '.join(job_item.split(' ')[5:]).strip()
-            if not " " in cmd:
-                with open(cmd, 'w') as f:
-                    f.write(code)
         current_jobs.pop(index)
         cron_tab = '\n'.join(current_jobs) + '\n'
         subprocess.run(['crontab', '-'], input=cron_tab.encode('utf-8'))
-
-
-def custom_crons(request):
-    # domains = get_domains_mysql()
-    # domains = '\n'.join(domains).strip()
-    ctx = {
-        'domains': json.dumps(get_domains_mysql()),
-        'users': json.dumps(get_users_mysql()),
-    }
-    if request.method == 'POST':
-        if request.POST.get('domains') and request.POST.get('cmd'):
-            domains = request.POST.get(
-                'domains').strip().replace('\r', '').split('\n')
-            cmd = request.POST.get('cmd').strip()
-            ext = request.POST.get('ext')
-            script = ''
-            if ext == 'py':
-                script = f"""#!{sys.executable}
-import os
-domains = {domains}
-for domain in domains:
-    os.system('{cmd}'.format(domain))
-"""
-            elif ext == 'sh':
-                script = f"""#!/bin/bash
-for i in {' '.join(domains)}; do
-    {cmd.replace('{}', '$i')}
-done
-"""
-            filename = slugify(cmd)[int(len(slugify(cmd))/2):].strip('-') + dt.datetime.now().strftime('%Y%m%d%H%M%S')
-            base_dir = os.path.dirname(
-                os.path.dirname(os.path.abspath(__file__)))
-            full_filename = f'{base_dir}/{filename}.{ext}'
-            with open(full_filename, 'w') as f:
-                f.write(script)
-            subprocess.run(['chmod', '+x', full_filename],
-                           stdout=subprocess.PIPE)
-            set_cron_job(request.POST.get('interval').strip() +' ' + full_filename.strip())
-            # set_cron_job(request.POST.get('interval').strip() +' ' + full_filename.strip() + ' > /root/log_do_backup.txt')
-
-            return redirect('cron_jobs')
-    return render(request, 'custom_crons.html', ctx)
-
 
 def cron_jobs(request):
     cron_jobs = [(i, x) for i, x in enumerate(get_cron_jobs())]
@@ -130,11 +74,6 @@ def cron_jobs(request):
             return redirect('cron_jobs')
         if request.GET.get('edit'):
             cron_job = get_cron_jobs()[int(request.GET.get('idx'))].strip()
-            only_file = ' '.join(cron_job.split(' ')[5:]).strip()
-            if not " " in only_file:
-                with open(only_file, 'r') as f:
-                    ctx['code'] = f.read()
-                    ctx['type_'] = 'python' if only_file.endswith('.py') else 'shell'
             ctx['cron_job'] = {
                 "idx": int(request.GET.get('idx')),
                 "cmd": ' '.join(cron_job.split(' ')[5:]),
@@ -149,8 +88,7 @@ def cron_jobs(request):
         if request.POST.get('cmd') and request.POST.get('interval'):
             cmd = request.POST.get('interval').strip(
             ) + ' ' + request.POST.get('cmd').strip()
-            code = request.POST.get('code').replace('\r', '')
-            delete_cron_job(int(request.GET.get('idx')), True, code)
+            delete_cron_job(int(request.GET.get('idx')), True)
             set_cron_job(cmd)
             return redirect('cron_jobs')
     if request.method == 'POST':
