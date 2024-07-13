@@ -1,0 +1,85 @@
+<div class="flex flex-col items-center justify-center">
+  <div class="max-w-xl mx-auto bg-white p-6 rounded-lg shadow-md">
+    <h1 id="cron-expression-builder" class="text-2xl font-bold mb-4">
+      Cron Expression Builder
+    </h1>
+    <div class="mb-4">
+      <label for="minute" class="block text-sm font-medium text-gray-700"
+        >Minuto:</label
+      >
+      <input
+        type="text"
+        id="minute"
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="* or 0-59"
+      />
+    </div>
+    <div class="mb-4">
+      <label for="hour" class="block text-sm font-medium text-gray-700"
+        >Hora:</label
+      >
+      <input
+        type="text"
+        id="hour"
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="* or 0-23"
+      />
+    </div>
+    <div class="mb-4">
+      <label for="dayOfMonth" class="block text-sm font-medium text-gray-700"
+        >Dia do Mês:</label
+      >
+      <input
+        type="text"
+        id="dayOfMonth"
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="* or 1-31"
+      />
+    </div>
+    <div class="mb-4">
+      <label for="month" class="block text-sm font-medium text-gray-700"
+        >Mês:</label
+      >
+      <input
+        type="text"
+        id="month"
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="* or 1-12"
+      />
+    </div>
+    <div class="mb-4">
+      <label for="dayOfWeek" class="block text-sm font-medium text-gray-700"
+        >Dia da Semana:</label
+      >
+      <input
+        type="text"
+        id="dayOfWeek"
+        class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+        placeholder="* or 0-6 (Domingo=0)"
+      />
+    </div>
+    <button
+      onclick="generateCron()"
+      class="w-full bg-indigo-600 text-white py-2 rounded-md shadow-md hover:bg-indigo-700"
+    >
+      Gerar Cron Expression
+    </button>
+    <p class="mt-4 text-lg">
+      Cron Expression:
+      <span id="cronResult" class="font-mono text-gray-800"></span>
+    </p>
+  </div>
+
+  <script>
+    function generateCron() {
+      const minute = document.getElementById("minute").value || "*";
+      const hour = document.getElementById("hour").value || "*";
+      const dayOfMonth = document.getElementById("dayOfMonth").value || "*";
+      const month = document.getElementById("month").value || "*";
+      const dayOfWeek = document.getElementById("dayOfWeek").value || "*";
+
+      const cronExpression = `${minute} ${hour} ${dayOfMonth} ${month} ${dayOfWeek}`;
+      document.getElementById("cronResult").innerText = cronExpression;
+    }
+  </script>
+</div>

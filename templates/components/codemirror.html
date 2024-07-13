@@ -1,0 +1,34 @@
+{% load static %}
+<div class="mb-4">
+    <textarea name="code" id="myTextarea">{{code}}</textarea>
+    <link rel="stylesheet" href='{% static "css/codemirror.min.css" %}'>
+    <link rel="stylesheet" href='{% static "css/show-hint.min.css" %}'>
+    <link rel="stylesheet" href='{% static "css/dracula.min.css" %}'>
+    <link rel="stylesheet" href='{% static "css/fullscreen.min.css" %}'>
+    <script src='{% static "js/codemirror.min.js" %}'></script>
+    <script src='{% static "js/show-hint.min.js" %}'></script>
+    <script src='{% static "js/python.min.js" %}'></script>
+    <script src='{% static "js/shell.min.js" %}'></script>
+    <script src='{% static "js/fullscreen.min.js" %}'></script>
+    <script>
+        const myMode = "{% if type_ %}{{type_}}{% else %}python{% endif %}"
+        var editor = CodeMirror.fromTextArea(myTextarea, {
+            lineNumbers: true,
+            extraKeys: {
+                "Ctrl-Space": "autocomplete", 
+                "F11": function (cm) {
+                    cm.setOption("fullScreen", !cm.getOption("fullScreen"));
+                },
+                "Esc": function (cm) {
+                    if (cm.getOption("fullScreen")) cm.setOption("fullScreen", false);
+                }
+            },
+            mode: myMode == "shell" ? "shell" : {
+                name: "python",
+                version: 3,
+                singleLineStringErrors: false
+            },
+        });
+        editor.setOption("theme", "dracula");
+    </script>
+</div>
