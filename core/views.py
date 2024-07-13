@@ -9,39 +9,10 @@ import json
 from slugify import slugify
 import datetime as dt
 
-
-def get_domains_vmail():
-    result = subprocess.run(['ls', '/var/vmail/'], stdout=subprocess.PIPE)
-    domains = result.stdout.decode('utf-8').split('\n')
-    return domains
-
-
-def get_domains_mysql():
-    command = 'mysql root_cwp -B -N -s -e "SELECT domain FROM domains WHERE 1;"'
-    output = os.popen(command).read()
-    domains = output.strip().split('\n')
-    return domains
-
-
-def get_users_mysql():
-    command = '''mysql root_cwp -B -N -s -e "SELECT username FROM user WHERE backup='on'"'''
-    output = os.popen(command).read()
-    users = output.strip().split('\n')
-    return users
-
-
-def get_users_passwd():
-    result = subprocess.run(
-        ['cut', '-d:', '-f1', '/etc/passwd'], stdout=subprocess.PIPE)
-    users = result.stdout.decode('utf-8').split('\n')
-    return users
-
-
 def get_cron_jobs():
     result = subprocess.run(['crontab', '-l'], stdout=subprocess.PIPE)
     cron_jobs = result.stdout.decode('utf-8').split('\n')
     return [job for job in cron_jobs if not job.startswith('#') and len(job) >= 5]
-
 
 def set_cron_job(cron_job):
     current_jobs = get_cron_jobs()
@@ -49,13 +20,11 @@ def set_cron_job(cron_job):
     cron_tab = '\n'.join(current_jobs) + '\n'
     subprocess.run(['crontab', '-'], input=cron_tab.encode('utf-8'))
 
-
-def delete_cron_job(index, edit=False, code=None):
+def delete_cron_job(index):
     current_jobs = get_cron_jobs()
     if 0 <= index < len(current_jobs):
         if not os.path.exists('./tmp'):
             os.makedirs('./tmp')
-
         datetime_now = dt.datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
         with open(f'./tmp/backup_cron_{datetime_now}.txt', 'w') as f:
             f.write('\n'.join(current_jobs) + '\n')
@@ -88,7 +57,7 @@ def cron_jobs(request):
         if request.POST.get('cmd') and request.POST.get('interval'):
             cmd = request.POST.get('interval').strip(
             ) + ' ' + request.POST.get('cmd').strip()
-            delete_cron_job(int(request.GET.get('idx')), True)
+            delete_cron_job(int(request.GET.get('idx')))
             set_cron_job(cmd)
             return redirect('cron_jobs')
     if request.method == 'POST':

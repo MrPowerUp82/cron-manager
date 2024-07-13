@@ -7,22 +7,6 @@ def get_csf_allow_ip():
     # ips = [ip[:ip.rfind('#')].strip() if ip.rfind('#') > 0 else ip.strip() for ip in output.strip().split('\n') if ip and not ip.startswith('#')]
     return output
 
-# logger = logging.getLogger(__name__)
-
-# class ExecutionTimeMiddleware:
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-
-#     def __call__(self, request):
-#         start_time = time.time()
-        
-#         response = self.get_response(request)
-        
-#         execution_time = time.time() - start_time
-#         logger.info(f"Execution time: {execution_time:.2f} seconds")
-        
-#         return response
-
 class IPBlockerMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
