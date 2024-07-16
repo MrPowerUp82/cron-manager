@@ -2,10 +2,14 @@ from django.db import models
 from django.db.models.signals import post_save, pre_delete
 from slugify import slugify
 from django.dispatch import receiver
-import os, threading
+import os
+import threading
+
 
 def tailwind_build():
-    os.system('npx tailwindcss build -i ./src/input.css -o ./core/static/css/pages.css --content "./templates/trash/**/*.{html,js}"')
+    os.system(
+        'npx tailwindcss build -i ./src/input.css -o ./core/static/css/pages.css --content "./templates/trash/**/*.{html,js}"')
+
 
 class Page(models.Model):
     name = models.CharField(max_length=255)
@@ -27,6 +31,7 @@ class Component(models.Model):
     category = models.CharField(max_length=255, blank=True, null=True)
     attributes = models.JSONField(blank=True, null=True)
 
+
 class Scripts(models.Model):
     name = models.CharField(max_length=255)
     content = models.TextField()
@@ -35,11 +40,12 @@ class Scripts(models.Model):
     def __str__(self) -> str:
         return self.name
 
+
 @receiver(post_save, sender=Component)
 def component_post_save(sender, instance, *args, **kwargs):
     with open(f'templates/trash/components_cache/{instance.html_id}.html', 'w') as f:
         f.write(instance.content)
-        
+
     threading.Thread(target=tailwind_build).start()
 
 
@@ -60,6 +66,7 @@ def page_post_save(sender, instance, *args, **kwargs):
         f.write(instance.content)
 
     threading.Thread(target=tailwind_build).start()
+
 
 post_save.connect(page_post_save, sender=Page)
 

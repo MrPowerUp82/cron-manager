@@ -9,16 +9,19 @@ import json
 from slugify import slugify
 import datetime as dt
 
+
 def get_cron_jobs():
     result = subprocess.run(['crontab', '-l'], stdout=subprocess.PIPE)
     cron_jobs = result.stdout.decode('utf-8').split('\n')
     return [job for job in cron_jobs if not job.startswith('#') and len(job) >= 5]
+
 
 def set_cron_job(cron_job):
     current_jobs = get_cron_jobs()
     current_jobs.append(cron_job)
     cron_tab = '\n'.join(current_jobs) + '\n'
     subprocess.run(['crontab', '-'], input=cron_tab.encode('utf-8'))
+
 
 def delete_cron_job(index):
     current_jobs = get_cron_jobs()
@@ -31,6 +34,7 @@ def delete_cron_job(index):
         current_jobs.pop(index)
         cron_tab = '\n'.join(current_jobs) + '\n'
         subprocess.run(['crontab', '-'], input=cron_tab.encode('utf-8'))
+
 
 def cron_jobs(request):
     cron_jobs = [(i, x) for i, x in enumerate(get_cron_jobs())]

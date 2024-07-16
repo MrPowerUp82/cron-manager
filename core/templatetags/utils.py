@@ -13,8 +13,9 @@ WEEK_DAY = {
     "*": "Todos os dias",
 }
 
+
 @register.filter
-def cron_to_week_day(x: str)-> str:
+def cron_to_week_day(x: str) -> str:
     try:
         idx = x.split(' ')[4]
         return WEEK_DAY.get(idx, 'Invalid day')

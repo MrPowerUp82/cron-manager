@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2v#o(7gxclret0%qy3)+df91hrf!f+n8=b+zsp_k*c)$l279-k'
+SECRET_KEY = 'vwpch#7!n1exw^st5b%!p)nty10)%xxk+s&@m*=%0l02@szw6('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #apps
+    # apps
     'core',
-    
+
 ]
 
 MIDDLEWARE = [
@@ -52,8 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'core.middleware.IPBlockerMiddleware', 
-    # 'core.middleware.ExecutionTimeMiddleware',
+    'core.middleware.IPBlockerMiddleware',
 ]
 
 ROOT_URLCONF = 'cron_manager.urls'
@@ -70,7 +69,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
-            'libraries':{
+            'libraries': {
                 'utils': 'core.templatetags.utils',
 
             }
